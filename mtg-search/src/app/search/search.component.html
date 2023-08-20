@@ -8,7 +8,6 @@
             <li *ngFor="let card of cards">
                 <a [routerLink]="['/card', card.name]">
                     <img [src]="card.image_uris.normal || card.name" class="w-auto rounded-xl">
-                    <p>{{card.name}}</p>
                 </a>
             </li>
         </ul>
