@@ -7,12 +7,14 @@ import { AppComponent } from './app.component';
 import { SearchComponent } from './search/search.component';
 import { CardDetailsComponent } from './card-details/card-details.component';
 import { HttpClientModule } from '@angular/common/http';
+import { SearchResultsComponent } from './search-results/search-results.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     SearchComponent,
-    CardDetailsComponent
+    CardDetailsComponent,
+    SearchResultsComponent
   ],
   imports: [
     BrowserModule,
