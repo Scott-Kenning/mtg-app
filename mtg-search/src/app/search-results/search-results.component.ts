@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CardService } from '../card.service';
 import { Card, SearchResponse } from '../types';
+import { Location } from '@angular/common';
 
 @Component({
     selector: 'app-search-results',
@@ -16,6 +17,42 @@ export class SearchResultsComponent implements OnInit {
     hasNextPage: boolean = true; 
     totalPages: number = 0;
 
+    colors = [
+        {label: "Any", value: ""},
+        {label: "White", value: "W"},
+        {label: "Blue", value: "U"},
+        {label: "Black", value: "B"},
+        {label: "Red", value: "R"},
+        {label: "Green", value: "G"},
+    ]
+    rarities = [
+        {label: "Any", value: ""},
+        {label: "Common", value: "common"},
+        {label: "Uncommon", value: "uncommon"},
+        {label: "Rare", value: "rare"},
+        {label: "Mythic", value: "mythic"}
+    ]
+    sortOptions = [
+        {label: "Alphabetical", value: ""},
+        {label: "CMC", value: "cmc"},
+        {label: "Rarity", value: "rarity"},
+    ]
+
+    selectedColor: string = '';
+    selectedRarity: string = '';
+    selectedSort: string = '';
+
+    
+    constructor(private cardService: CardService, private route: ActivatedRoute, private location: Location) {}
+
+    goBack() {
+        this.location.back();
+    }
+
+    isObjectEmpty(obj: any): boolean {
+        return Object.keys(obj).length === 0;
+    }
+
     ngOnInit() {
         this.route.queryParams.subscribe(params => {
             this.query = params['query'];
@@ -25,7 +62,8 @@ export class SearchResultsComponent implements OnInit {
     }
 
     searchCards() {
-        this.cardService.search(this.query, this.currentPage).subscribe((response: SearchResponse) => {
+        this.cardService.search(this.query, this.currentPage, this.selectedColor, this.selectedRarity, this.selectedSort)
+        .subscribe((response: SearchResponse) => {
             this.cards = response.cards;
             this.totalPages = response.totalPages;
             this.setHasPages();
@@ -65,6 +103,4 @@ export class SearchResultsComponent implements OnInit {
         this.setHasPages();
         this.searchCards();
     }
-
-    constructor(private cardService: CardService, private route: ActivatedRoute) {}
 }

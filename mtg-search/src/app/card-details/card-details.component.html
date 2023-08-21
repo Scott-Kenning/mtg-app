@@ -1,25 +1,26 @@
-<div class="w-screen min-h-screen bg-gradient-to-r from-slate-800 to-indigo-950 flex justify-center items-center p-8">
-    <div *ngIf="card" class="p-6 text-white bg-gray-900 rounded-lg shadow-2xl max-w-7xl border border-gray-700 transition-transform transform">
+<div class="w-screen min-h-screen bg-gradient-to-r from-slate-800 to-indigo-950 flex justify-center items-center p-4">
+    <button class="absolute top-10 left-8 text-white text-3xl focus:outline-none" (click)="goBack()">&larr;</button>
 
-        <!-- For single-faced cards -->
-        <ng-container *ngIf="card.card_faces.length === 0">
+    <div *ngIf="card" class="p-12 text-white bg-gray-900 rounded-lg shadow-2xl max-w-7xl border border-gray-700 transition-transform transform">
+
+        <ng-container *ngIf="!isObjectEmpty(card.image_uris)">
             <h1 class="text-4xl mb-6 text-center border-b border-gray-700 pb-4">{{ card.name }}</h1>
-            <div class="flex gap-8 mt-4">
-                <img [src]="card.image_uris.large" class="w-auto rounded-xl max-h-96 shadow-lg hover:shadow-2xl transition-shadow">
-                <div class="flex flex-col space-y-2">
+            <div class="flex flex-col sm:flex-row gap-8 mt-4">
+                <img [src]="card.image_uris.large" class="w-full h-auto rounded-xl sm:max-h-96 md:min-w-64 md:w-auto shadow-lg hover:shadow-2xl transition-shadow mb-4">
+                <div class="flex flex-col space-y-2 max-w-lg">
                     <p><strong>Mana Cost:</strong> {{ card.mana_cost }}</p>
                     <p><strong>CMC:</strong> {{ card.cmc }}</p>
-                    <p><strong>Type:</strong> {{ card.type_line }}</p>
-                    <p><strong>Oracle Text:</strong> {{ card.oracle_text }}</p>
-                    <p><strong>Rarity:</strong> {{ card.rarity.charAt(0).toUpperCase() + card.rarity.slice(1) }}</p>
-                    <p><strong>Set:</strong> {{ card.set_name }}</p>
-                    <p><strong>Artist:</strong> {{ card.artist }}</p>
                     <div class="flex gap-1">
                         <strong>Colors:</strong>
                         <span *ngFor="let color of card.colors" 
                               [style.background]="getColor(color)" 
                               class="w-6 h-6 rounded-full inline-block shadow-inner border border-white"></span>
                     </div>
+                    <p><strong>Type:</strong> {{ card.type_line }}</p>
+                    <p><strong>Rarity:</strong> {{ card.rarity.charAt(0).toUpperCase() + card.rarity.slice(1) }}</p>
+                    <p><strong>Oracle Text:</strong> {{ card.layout === "adventure" ? card.card_faces[0].oracle_text + " // " + card.card_faces[1].oracle_text: card.oracle_text }}</p>
+                    <p><strong>Set:</strong> {{ card.set_name }}</p>
+                    <p><strong>Artist:</strong> {{ card.artist }}</p>
                     <div>
                         <strong>Legalities:</strong>
                         <ul class="list-disc ml-6">
@@ -32,16 +33,16 @@
             </div>
         </ng-container>
 
-        <ng-container *ngIf="card.card_faces.length > 0">
+        <ng-container *ngIf="isObjectEmpty(card.image_uris)">
             <h1 class="text-4xl mb-6 text-center border-b border-gray-700 pb-4">{{ card.name }}</h1>
             <div class="flex flex-col sm:flex-row gap-8 mt-4">
                 <div class="flex flex-col">
-                    <img [src]="card.card_faces[faceIndex].image_uris.large" class="flex-shrink-0 w-auto rounded-xl min-w-64 sm:max-h-96 shadow-lg hover:shadow-2xl transition-shadow mb-4">
+                    <img [src]="card.card_faces[faceIndex].image_uris.large" class="w-full h-auto rounded-xl sm:max-h-96 md:min-w-64 md:w-auto shadow-lg hover:shadow-2xl transition-shadow mb-4">
                     <button (click)="toggleCardFace()" class="sm:w-full px-4 py-2 text-white bg-blue-500 hover:bg-blue-600 rounded transition">Flip</button>
                 </div>
 
-                <div class="flex flex-col space-y-2">
-                    <p><strong>Name:</strong> {{ card.card_faces[faceIndex].name }}</p>
+                <div class="flex flex-col space-y-2 max-w-lg">
+                    <p><strong>Face Name:</strong> {{ card.card_faces[faceIndex].name }}</p>
                     <p><strong>Mana Cost:</strong> {{ card.card_faces[faceIndex].mana_cost }}</p>
                     <p><strong>CMC:</strong> {{ card.cmc }}</p>
                     <p><strong>Type:</strong> {{ card.card_faces[faceIndex].type_line }}</p>

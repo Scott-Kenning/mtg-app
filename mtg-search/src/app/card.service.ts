@@ -11,10 +11,23 @@ export class CardService {
 
   constructor(private http: HttpClient) { }
 
-  search(query: string, page: number): Observable<SearchResponse> {
+  search(query: string, page: number, color?: string, rarity?: string, sort?: string): Observable<SearchResponse> {
     const encodedQuery = encodeURIComponent(query);  // Encoding the query
-    return this.http.get<SearchResponse>(`${this.baseUrl}/search/${encodedQuery}?page=${page}`);
+  
+    let params = new URLSearchParams();
+    params.set('query', encodedQuery);
+    params.set('page', page.toString());
+  
+    if (color) params.set('color', color);
+    if (rarity) params.set('rarity', rarity);
+    if (sort) params.set('sort', sort);
+  
+    const url = `${this.baseUrl}/search?${params.toString()}`;
+      
+    return this.http.get<SearchResponse>(url);
   }
+  
+
 
   getCardById(id: string): Observable<any> {
     const encodedId = encodeURIComponent(id);  // Encoding the id

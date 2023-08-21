@@ -19,7 +19,6 @@ app.get('/card/*', async (req, res) => {
         if (card) {
             const cardFaces = await db.any('SELECT * FROM card_faces WHERE card_id = $1', [card.id]);
             card.card_faces = cardFaces;
-            console.log(card)
             res.json(card);
         } else {
             res.status(404).json({ message: 'Card not found' });
@@ -30,16 +29,46 @@ app.get('/card/*', async (req, res) => {
     }
 });
 
-app.get('/search/:query', async (req, res) => {
-    const { query } = req.params;
+app.get('/search', async (req, res) => {
+    const query = req.query.query;
     const page = parseInt(req.query.page || '1');
+    const color = req.query.color;
+    const rarity = req.query.rarity;
+    const sort = req.query.sort || 'name';  // Default to alphabetical
     const limit = 10;
     const offset = (page - 1) * limit;
 
-    try {
-        const cards = await db.any('SELECT * FROM cards WHERE name ILIKE $1 ORDER BY name ASC LIMIT $2 OFFSET $3', [`%${query}%`, limit, offset]);
+    let filterConditions = 'WHERE name ILIKE $1';
+    let filterValues = [`%${query}%`];
+    let orderBy = 'ORDER BY name ASC';
 
-        const totalCount = await db.one('SELECT count(*) FROM cards WHERE name ILIKE $1', [`%${query}%`]);
+    if (color) {
+        filterConditions += ' AND $' + (filterValues.length + 1) + ' = ANY(colors)';
+        filterValues.push(color);
+    }    
+
+    if (rarity) {
+        filterConditions += ' AND rarity = $' + (filterValues.length + 1);
+        filterValues.push(rarity);
+    }
+
+    if (sort === 'rarity') {
+        orderBy = `ORDER BY CASE
+                     WHEN rarity = 'common' THEN 1
+                     WHEN rarity = 'uncommon' THEN 2
+                     WHEN rarity = 'rare' THEN 3
+                     WHEN rarity = 'mythic' THEN 4
+                     ELSE 5
+                   END`;
+    } else if (sort === 'cmc') {
+        orderBy = 'ORDER BY cmc ASC';
+    }
+    
+
+    try {
+        const cards = await db.any(`SELECT * FROM cards ${filterConditions} ${orderBy} LIMIT $${filterValues.length + 1} OFFSET $${filterValues.length + 2}`, [...filterValues, limit, offset]);
+
+        const totalCount = await db.one(`SELECT count(*) FROM cards ${filterConditions}`, filterValues);
         const totalCards = parseInt(totalCount.count);
         const totalPages = Math.ceil(totalCards / limit);
         
@@ -59,6 +88,7 @@ app.get('/search/:query', async (req, res) => {
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
+
 
 
 app.listen(PORT, () => {

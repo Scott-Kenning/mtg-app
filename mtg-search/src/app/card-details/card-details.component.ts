@@ -1,6 +1,7 @@
 import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { Location } from '@angular/common';
 
 @Component({
     selector: 'app-card-details',
@@ -10,7 +11,11 @@ import { Component, OnInit } from '@angular/core';
 export class CardDetailsComponent implements OnInit {
     card: any;
 
-    constructor(private route: ActivatedRoute, private httpClient: HttpClient) {}
+    constructor(private route: ActivatedRoute, private httpClient: HttpClient, private location: Location) {}
+
+    goBack() {
+        this.location.back();
+    }
 
     getColor(color: string): string {
         switch (color) {
@@ -21,6 +26,10 @@ export class CardDetailsComponent implements OnInit {
             case 'G': return 'green';
             default: return 'gray';
         }
+    }
+
+    isObjectEmpty(obj: any): boolean {
+        return Object.keys(obj).length === 0;
     }
 
     getLegalStatusKeys(legalities: { [key: string]: string }): string[] {
