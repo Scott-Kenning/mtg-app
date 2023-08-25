@@ -7,7 +7,7 @@ import { SearchResponse } from './types';
   providedIn: 'root'
 })
 export class CardService {
-  private baseUrl = 'http://localhost:3000';
+  private baseUrl = 'https://mtg-app-api.vercel.app';
 
   constructor(private http: HttpClient) { }
 
