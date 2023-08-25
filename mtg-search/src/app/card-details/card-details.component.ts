@@ -55,7 +55,7 @@ export class CardDetailsComponent implements OnInit {
 
     ngOnInit(): void {
         const cardName = this.route.snapshot.paramMap.get('name');
-        this.httpClient.get<any>('http://localhost:3000/card/' + cardName).subscribe(data => {
+        this.httpClient.get<any>('https://mtg-app-api.vercel.app/card/' + cardName).subscribe(data => {
             this.card = data;
         });
     }
