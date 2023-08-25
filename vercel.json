@@ -1,10 +1,10 @@
 {
     "version": 2,
-    "name": "server",
-    "build": {
-        "env": {
-        "production": true
-        }
-    }
-}
-  
+    "name": "mtg-app",
+    "builds": [
+       { "src": "server.js", "use": "@vercel/node" }
+    ],
+    "routes": [
+       { "src": "/(.*)", "dest": "/server.js" }
+    ]
+ }
