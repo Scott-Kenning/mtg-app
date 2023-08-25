@@ -1,0 +1,11 @@
+{
+    "version": 2,
+    "name": "server",
+    "root": "mtg-app",
+    "build": {
+        "env": {
+        "production": true
+        }
+    }
+}
+  
