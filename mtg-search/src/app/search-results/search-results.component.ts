@@ -16,6 +16,7 @@ export class SearchResultsComponent implements OnInit {
     hasPrevPage: boolean = false; 
     hasNextPage: boolean = true; 
     totalPages: number = 0;
+    showFilters: boolean = false;
 
     colors = [
         {label: "Any", value: ""},
@@ -65,6 +66,10 @@ export class SearchResultsComponent implements OnInit {
         this.currentPage = 1;
         this.cache.clear();
         this.searchCards();
+    }
+
+    toggleFilters() {
+        this.showFilters = !this.showFilters;
     }
 
     cache: Map<number, SearchResponse> = new Map();

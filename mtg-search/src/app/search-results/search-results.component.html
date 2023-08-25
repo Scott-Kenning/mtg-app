@@ -1,28 +1,34 @@
 <div class="w-screen min-h-screen bg-gradient-to-r from-slate-800 to-indigo-950">
-    <button class="absolute top-10 left-8 text-white text-3xl font-bold focus:outline-none" (click)="goBack()">&larr;</button>
+    <button class="absolute top-2 left-8 text-white text-3xl font-bold focus:outline-none z-50" (click)="goBack()">&larr;</button>
 
-    <div class="flex flex-col items-center w-full h-full max-w-7xl pt-10 px-8 mx-auto gap-8">
+    <div class="flex flex-col items-center w-full h-full max-w-7xl pt-10 px-8 mx-auto">
 
         <!-- Filters and Sorting -->
-        <div class="flex justify-between items-center w-full">
+        <div class="my-4 mr-auto">
+            <button class="text-white underline focus:outline-none h-min" (click)="toggleFilters()">
+                {{ showFilters ? 'Hide Filters' : 'Filters' }}
+            </button>
+            <div *ngIf="showFilters" class="flex flex-col mt-4 w-full">
             <!-- Filters -->
-            <div class="flex flex-col md:flex-row md:items-center text-md w-full mt-8">
-                <!-- Color Filter -->
-                <p class="text-white mr-2 mt-2">Color:</p>
-                <select [(ngModel)]="selectedColor" (change)="changeFilter()" class="w-min md:w-auto mr-8 p-2 bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200 rounded-md shadow-sm">
-                    <option *ngFor="let color of colors" [value]="color.value">{{ color.label }}</option>
-                </select>
+                <div class="grid grid-cols-2 grid-cols-[4em_1fr] md:grid-cols-6 md:grid-cols-[4em_1fr_4em_1fr_4em_1fr] text-md gap-y-4">
+                    <!-- Color Filter -->
+                        <p class="text-white mr-2 mt-2">Color:</p>
+                        <select [(ngModel)]="selectedColor" (change)="changeFilter()" class="w-min md:w-auto mr-8 p-2 bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200 rounded-md shadow-sm">
+                            <option *ngFor="let color of colors" [value]="color.value">{{ color.label }}</option>
+                        </select>
 
-                <!-- Rarity Filter -->
-                <p class="text-white mr-2 mt-2">Rarity:</p>
-                <select [(ngModel)]="selectedRarity" (change)="changeFilter()" class="w-min md:w-auto mr-8 p-2 bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200 rounded-md shadow-sm">
-                    <option *ngFor="let rarity of rarities" [value]="rarity.value">{{ rarity.label }}</option>
-                </select>
-                
-                <p class="text-white mr-2 mt-2">Sort:</p>
-                <select [(ngModel)]="selectedSort" (change)="changeFilter()" class="w-min md:w-auto p-2 bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200 rounded-md shadow-sm">
-                    <option *ngFor="let option of sortOptions" [value]="option.value">{{ option.label }}</option>
-                </select>
+                    <!-- Rarity Filter -->
+
+                        <p class="text-white mr-2 mt-2">Rarity:</p>
+                        <select [(ngModel)]="selectedRarity" (change)="changeFilter()" class="w-min md:w-auto mr-8 p-2 bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200 rounded-md shadow-sm">
+                            <option *ngFor="let rarity of rarities" [value]="rarity.value">{{ rarity.label }}</option>
+                        </select>
+
+                        <p class="text-white mr-2 mt-2">Sort:</p>
+                        <select [(ngModel)]="selectedSort" (change)="changeFilter()" class="w-min md:w-auto p-2 bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200 rounded-md shadow-sm">
+                            <option *ngFor="let option of sortOptions" [value]="option.value">{{ option.label }}</option>
+                        </select>
+                </div>
             </div>
         </div>
 
@@ -32,12 +38,12 @@
             <li *ngFor="let card of cards" class="relative group">
                 <a [routerLink]="['/card', card.name]">
                     <!-- For single-faced cards -->
-                    <img *ngIf="!isObjectEmpty(card.image_uris); else dualFace" [src]="card.image_uris.normal" class="w-auto h-[300px] rounded-xl transition-shadow group-hover:shadow-xl">
+                    <img *ngIf="!isObjectEmpty(card.image_uris); else dualFace" [src]="card.image_uris.normal" class="w-auto aspect-[5/7] rounded-xl transition-shadow group-hover:shadow-xl">
 
                     <!-- For dual-faced cards -->
                     <ng-template #dualFace>
                         <div class="relative">
-                            <img [src]="card.activeFace.image_uris.normal" class="w-auto h-[300px] rounded-xl transition-shadow group-hover:shadow-xl">
+                            <img [src]="card.activeFace.image_uris.normal" class="w-auto aspect-[5/7] rounded-xl transition-shadow group-hover:shadow-xl">
                             <button (click)="toggleFace(card, $event)" class="absolute bottom-2 left-1/2 transform -translate-x-1/2 p-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-shadow shadow-md">
                                 ↻
                             </button>
@@ -48,7 +54,7 @@
         </ul>
 
         <!-- Pagination controls -->
-        <div class="mx-auto mb-6" *ngIf="cards.length > 0 && totalPages > 1">
+        <div class="mx-auto my-6" *ngIf="cards.length > 0 && totalPages > 1">
             <button (click)="prevPage()" class="p-3 text-xl bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200 rounded-md shadow-sm" [disabled]="!hasPrevPage">Previous</button>
             <span class="mx-6 text-white">Page: {{ currentPage }}</span>
             <button (click)="nextPage()" class="p-3 text-xl bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200 rounded-md shadow-sm" [disabled]="!hasNextPage">Next</button>
