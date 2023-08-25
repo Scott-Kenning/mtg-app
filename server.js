@@ -8,7 +8,10 @@ dotenv.config();
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+    origin: 'https://mtg-search-app.vercel.app'
+}));
+
 const PORT = 3000;
 app.use(bodyParser.json());
 
