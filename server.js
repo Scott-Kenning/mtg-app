@@ -1,8 +1,10 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const db = require('./database');
+const sql = require('./database.js');
 const cors = require('cors');
-require('dotenv').config();
+const dotenv = require('dotenv');
+
+dotenv.config();
 
 const app = express();
 
@@ -14,10 +16,10 @@ app.get('/card/*', async (req, res) => {
     try {
         const cardName = decodeURIComponent(req.params[0]);
 
-        const card = await db.oneOrNone('SELECT * FROM cards WHERE name = $1', [cardName]);
+        const [card] = await sql`SELECT * FROM cards WHERE name = ${cardName}`;
 
         if (card) {
-            const cardFaces = await db.any('SELECT * FROM card_faces WHERE card_id = $1', [card.id]);
+            const cardFaces = await sql`SELECT * FROM card_faces WHERE card_id = ${card.id}`;
             card.card_faces = cardFaces;
             res.json(card);
         } else {
@@ -29,31 +31,30 @@ app.get('/card/*', async (req, res) => {
     }
 });
 
+
+
 app.get('/search', async (req, res) => {
     const query = req.query.query;
     const page = parseInt(req.query.page || '1');
     const color = req.query.color;
     const rarity = req.query.rarity;
-    const sort = req.query.sort || 'name';  // Default to alphabetical
+    const sort = req.query.sort || 'name'; 
     const limit = 10;
     const offset = (page - 1) * limit;
 
-    let filterConditions = 'WHERE name ILIKE $1';
-    let filterValues = [`%${query}%`];
-    let orderBy = 'ORDER BY name ASC';
+    let filterConditions = sql`name ILIKE ${'%'+query+'%'}`;
+    let orderBy = sql`ORDER BY name ASC`;
 
     if (color) {
-        filterConditions += ' AND $' + (filterValues.length + 1) + ' = ANY(colors)';
-        filterValues.push(color);
+        filterConditions = sql`${filterConditions} AND ${color} = ANY(colors)`;
     }    
 
     if (rarity) {
-        filterConditions += ' AND rarity = $' + (filterValues.length + 1);
-        filterValues.push(rarity);
+        filterConditions = sql`${filterConditions} AND rarity = ${rarity}`;
     }
 
     if (sort === 'rarity') {
-        orderBy = `ORDER BY CASE
+        orderBy = sql`ORDER BY CASE
                      WHEN rarity = 'common' THEN 1
                      WHEN rarity = 'uncommon' THEN 2
                      WHEN rarity = 'rare' THEN 3
@@ -61,15 +62,13 @@ app.get('/search', async (req, res) => {
                      ELSE 5
                    END`;
     } else if (sort === 'cmc') {
-        orderBy = 'ORDER BY cmc ASC';
+        orderBy = sql`ORDER BY cmc ASC`;
     }
     
-
     try {
-        const cards = await db.any(`SELECT * FROM cards ${filterConditions} ${orderBy} LIMIT $${filterValues.length + 1} OFFSET $${filterValues.length + 2}`, [...filterValues, limit, offset]);
+        const cards = await sql`SELECT * FROM cards WHERE ${filterConditions} ${orderBy} LIMIT ${limit} OFFSET ${offset}`;
 
-        const totalCount = await db.one(`SELECT count(*) FROM cards ${filterConditions}`, filterValues);
-        const totalCards = parseInt(totalCount.count);
+        const [{ count: totalCards }] = await sql`SELECT count(*) FROM cards WHERE ${filterConditions}`;
         const totalPages = Math.ceil(totalCards / limit);
         
         if (!cards.length) {
@@ -77,7 +76,7 @@ app.get('/search', async (req, res) => {
         }
 
         const cardsWithFaces = await Promise.all(cards.map(async card => {
-            const cardFaces = await db.any('SELECT * FROM card_faces WHERE card_id = $1', [card.id]);
+            const cardFaces = await sql`SELECT * FROM card_faces WHERE card_id = ${card.id}`;
             card.card_faces = cardFaces;
             return card;
         }));
@@ -92,5 +91,5 @@ app.get('/search', async (req, res) => {
 
 
 app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+    console.log(`Server is running on ${PORT}`);
 });

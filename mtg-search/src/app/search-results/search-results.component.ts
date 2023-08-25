@@ -61,20 +61,56 @@ export class SearchResultsComponent implements OnInit {
         });
     }
 
+    changeFilter() {
+        this.currentPage = 1;
+        this.cache.clear();
+        this.searchCards();
+    }
+
+    cache: Map<number, SearchResponse> = new Map();
+
     searchCards() {
+        // Check if data for the current page is in the cache
+        if (this.cache.has(this.currentPage)) {
+            const cachedResponse = this.cache.get(this.currentPage);
+            if (cachedResponse) {
+                this.processSearchResponse(cachedResponse);
+                return;
+            }
+        }
+        
+    
+        // Fetch data for the current page
         this.cardService.search(this.query, this.currentPage, this.selectedColor, this.selectedRarity, this.selectedSort)
         .subscribe((response: SearchResponse) => {
-            this.cards = response.cards;
-            this.totalPages = response.totalPages;
-            this.setHasPages();
+            this.processSearchResponse(response);
+            
+            // Cache the current page's data
+            this.cache.set(this.currentPage, response);
     
-            this.cards.forEach(card => {
-                if (card.card_faces && card.card_faces.length > 0) {
-                    card.activeFace = card.card_faces[0];
-                }
-            });        
+            // Prefetch the next page's data if it's not already in the cache
+            if (!this.cache.has(this.currentPage + 1)) {
+                this.cardService.search(this.query, this.currentPage + 1, this.selectedColor, this.selectedRarity, this.selectedSort)
+                .subscribe((nextPageResponse: SearchResponse) => {
+                    this.cache.set(this.currentPage + 1, nextPageResponse);
+                });
+            }
         });
     }
+    
+    // Separate function to process the response
+    processSearchResponse(response: SearchResponse) {
+        this.cards = response.cards;
+        this.totalPages = response.totalPages;
+        this.setHasPages();
+    
+        this.cards.forEach(card => {
+            if (card.card_faces && card.card_faces.length > 0) {
+                card.activeFace = card.card_faces[0];
+            }
+        });
+    }
+    
 
     toggleFace(card: any, event: Event) {
         event.preventDefault();
@@ -97,10 +133,11 @@ export class SearchResultsComponent implements OnInit {
             this.searchCards();
         }
     }
-
+    
     nextPage() {
         this.currentPage++;
         this.setHasPages();
         this.searchCards();
     }
+    
 }

@@ -1,7 +1,7 @@
+const postgres = require('postgres');
 require('dotenv').config();
-const pgp = require('pg-promise')();
-const connectionString = `postgres://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`;
 
-const db = pgp(connectionString);
+const connectionString = process.env.DATABASE_URL;
+const sql = postgres(connectionString);
 
-module.exports = db;
+module.exports = sql;

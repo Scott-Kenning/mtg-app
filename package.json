@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@supabase/supabase-js": "^2.33.1",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
@@ -17,6 +18,7 @@
     "jsonstream": "^1.0.3",
     "pg": "^8.11.3",
     "pg-promise": "^11.5.3",
+    "postgres": "^3.3.5",
     "promise": "^8.3.0"
   }
 }

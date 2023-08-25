@@ -9,18 +9,18 @@
             <div class="flex flex-col md:flex-row md:items-center text-md w-full mt-8">
                 <!-- Color Filter -->
                 <p class="text-white mr-2 mt-2">Color:</p>
-                <select [(ngModel)]="selectedColor" (change)="searchCards()" class="w-min md:w-auto mr-8 p-2 bg-indigo-900 text-white hover:bg-indigo-700 transition-all duration-200 rounded-md shadow-sm">
+                <select [(ngModel)]="selectedColor" (change)="changeFilter()" class="w-min md:w-auto mr-8 p-2 bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200 rounded-md shadow-sm">
                     <option *ngFor="let color of colors" [value]="color.value">{{ color.label }}</option>
                 </select>
 
                 <!-- Rarity Filter -->
                 <p class="text-white mr-2 mt-2">Rarity:</p>
-                <select [(ngModel)]="selectedRarity" (change)="searchCards()" class="w-min md:w-auto mr-8 p-2 bg-indigo-900 text-white hover:bg-indigo-700 transition-all duration-200 rounded-md shadow-sm">
+                <select [(ngModel)]="selectedRarity" (change)="changeFilter()" class="w-min md:w-auto mr-8 p-2 bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200 rounded-md shadow-sm">
                     <option *ngFor="let rarity of rarities" [value]="rarity.value">{{ rarity.label }}</option>
                 </select>
                 
                 <p class="text-white mr-2 mt-2">Sort:</p>
-                <select [(ngModel)]="selectedSort" (change)="searchCards()" class="w-min md:w-auto p-2 bg-indigo-900 text-white hover:bg-indigo-700 transition-all duration-200 rounded-md shadow-sm">
+                <select [(ngModel)]="selectedSort" (change)="changeFilter()" class="w-min md:w-auto p-2 bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200 rounded-md shadow-sm">
                     <option *ngFor="let option of sortOptions" [value]="option.value">{{ option.label }}</option>
                 </select>
             </div>
@@ -49,9 +49,9 @@
 
         <!-- Pagination controls -->
         <div class="mx-auto mb-6" *ngIf="cards.length > 0 && totalPages > 1">
-            <button (click)="prevPage()" class="p-3 text-xl bg-indigo-900 text-white hover:bg-indigo-700 transition-all duration-200 rounded-md shadow-sm" [disabled]="!hasPrevPage">Previous</button>
+            <button (click)="prevPage()" class="p-3 text-xl bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200 rounded-md shadow-sm" [disabled]="!hasPrevPage">Previous</button>
             <span class="mx-6 text-white">Page: {{ currentPage }}</span>
-            <button (click)="nextPage()" class="p-3 text-xl bg-indigo-900 text-white hover:bg-indigo-700 transition-all duration-200 rounded-md shadow-sm" [disabled]="!hasNextPage">Next</button>
+            <button (click)="nextPage()" class="p-3 text-xl bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200 rounded-md shadow-sm" [disabled]="!hasNextPage">Next</button>
         </div>
     </div>
 </div>

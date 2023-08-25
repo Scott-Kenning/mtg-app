@@ -12,10 +12,10 @@ export class CardService {
   constructor(private http: HttpClient) { }
 
   search(query: string, page: number, color?: string, rarity?: string, sort?: string): Observable<SearchResponse> {
-    const encodedQuery = encodeURIComponent(query);  // Encoding the query
+    // const encodedQuery = encodeURIComponent(query);  // Encoding the query
   
     let params = new URLSearchParams();
-    params.set('query', encodedQuery);
+    params.set('query', query);
     params.set('page', page.toString());
   
     if (color) params.set('color', color);
